@@ -5,7 +5,7 @@ namespace VHSMovieRentalAPI.Interfaces
     public interface IMovieTransactionDetailRepository : IRepository<MovieTransactionDetail>
     {
 
-        int CreateTransactionDetail(MovieTransactionDetail oDetail);
+        int ValidateTransactionDetail(int iTransactionUserID,  MovieTransactionDetail oDetail, out string sErrorMessage);
         decimal ReturnMovieRental(int iMovieTransactionDetailId);
     }
 }

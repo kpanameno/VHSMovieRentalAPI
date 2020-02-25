@@ -22,31 +22,49 @@ namespace VHSMovieRentalAPI.Repositories
                 .Include(x => x.MovieTransactionDetails).FirstOrDefault();
         }
 
-        public int CreateTransaction(MovieTransaction oMovieTransaction)
+        public int CreateTransaction(int iUserTransactionID, MovieTransaction oMovieTransaction, out string sErrorMessage)
         {
             int iResult = 0;
-
-            // Validate all fields are correct
-            string sValidEntity = ValidateInfo(oMovieTransaction);
-            if (!string.IsNullOrEmpty(sValidEntity))
+            sErrorMessage = "";
+            try
             {
-                throw new Exception(sValidEntity);
+                // Validate all fields are correct
+                if (iUserTransactionID == 0)
+                {
+                    sErrorMessage = "Empty User Transaction ID";
+                    iResult = -1;
+                    return iResult;
+                }
+
+                // Validate Transaction Details
+                int iDetailResult = 0;
+                foreach (MovieTransactionDetail oDetail in oMovieTransaction.MovieTransactionDetails)
+                {
+                    iDetailResult = oDetailRepository.ValidateTransactionDetail(iUserTransactionID, oDetail, out sErrorMessage);
+
+                    // Exit if there was an error during the Detail creation
+                    if (!string.IsNullOrEmpty(sErrorMessage))
+                        return -1;
+
+                    if (iDetailResult == 0)
+                    {
+                        sErrorMessage = "Internal Error: Unable to create Detail ";
+                        return -1;
+                    }
+
+                }
+
+                // Create Transaction Header
+                oMovieTransaction.TransactionUserID = iUserTransactionID; // User that comes from the Token
+                oMovieTransaction.UpdatedUserID = iUserTransactionID;
+                oMovieTransaction.Created = DateTime.Now;
+                oMovieTransaction.Updated = DateTime.Now;
+                Create(oMovieTransaction);
+
             }
-
-            oMovieTransaction.UpdatedUserID = oMovieTransaction.TransactionUserID;
-            oMovieTransaction.Created = DateTime.Now;
-            oMovieTransaction.Updated = DateTime.Now;
-            oContext.Add(oMovieTransaction);
-
-            foreach (MovieTransactionDetail oDetail in oMovieTransaction.MovieTransactionDetails)
+            catch (Exception ex)
             {
-
-                oDetail.MovieTransactionID = oMovieTransaction.MovieTransactionID;
-                oDetail.UpdatedUserID = oMovieTransaction.TransactionUserID;
-                oDetail.Created = DateTime.Now;
-                oDetail.Updated = DateTime.Now;
-
-                oDetailRepository.CreateTransactionDetail(oDetail);
+                sErrorMessage = ex.Message;
             }
 
             return iResult;

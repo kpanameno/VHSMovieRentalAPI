@@ -1,0 +1,91 @@
+﻿@model IEnumerable<VHSMovieRentalAPI.Models.Movie>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Movie</title>
+</head>
+<body>
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Description)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Stock)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.RentalPrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.SalePrice)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Available)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Updated)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.UpdatedUser)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Title)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Description)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Stock)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.RentalPrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.SalePrice)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Available)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Updated)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.UpdatedUser.UserID)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.MovieID">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.MovieID">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.MovieID">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -75,7 +76,15 @@ namespace VHSMovieRentalAPI.Controllers
 
             try
             {
-                int iResult = oRepository.CreateTransaction(oMovieTransaction);
+                int iUserTransactionID = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value); ;
+                string sErrorMessage = "";
+
+                int iResult = oRepository.CreateTransaction(iUserTransactionID, oMovieTransaction, out sErrorMessage);
+                if (!string.IsNullOrEmpty(sErrorMessage))
+                {
+                    return BadRequest(new { Message = sErrorMessage });
+                }
+
                 if (iResult == 0)
                 {
                     return BadRequest(new { Message = "Unable to create Movie Transaction" });

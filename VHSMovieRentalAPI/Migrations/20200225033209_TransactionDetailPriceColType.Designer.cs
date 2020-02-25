@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VHSMovieRentalAPI.Models;
 
 namespace VHSMovieRentalAPI.Migrations
 {
     [DbContext(typeof(VHSMovieRentalDBContext))]
-    partial class VHSMovieRentalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200225033209_TransactionDetailPriceColType")]
+    partial class TransactionDetailPriceColType
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -188,7 +190,7 @@ namespace VHSMovieRentalAPI.Migrations
                     b.Property<int>("MovieID")
                         .HasColumnType("int");
 
-                    b.Property<int?>("MovieRentalTermID")
+                    b.Property<int>("MovieRentalTermID")
                         .HasColumnType("int");
 
                     b.Property<int>("MovieTransactionID")
@@ -357,7 +359,9 @@ namespace VHSMovieRentalAPI.Migrations
 
                     b.HasOne("VHSMovieRentalAPI.Models.MovieRentalTerm", "MovieRentalTerm")
                         .WithMany()
-                        .HasForeignKey("MovieRentalTermID");
+                        .HasForeignKey("MovieRentalTermID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("VHSMovieRentalAPI.Models.MovieTransaction", null)
                         .WithMany("MovieTransactionDetails")

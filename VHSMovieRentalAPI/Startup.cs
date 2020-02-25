@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using VHSMovieRentalAPI.Interfaces;
 using VHSMovieRentalAPI.Models;
 using VHSMovieRentalAPI.Repositories;
@@ -31,6 +32,7 @@ namespace VHSMovieRentalAPI
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        [Obsolete]
         public void ConfigureServices(IServiceCollection services)
         {
             // Authentication
@@ -73,9 +75,11 @@ namespace VHSMovieRentalAPI
             services.AddTransient<IMovieRentalTermRepository, MovieRentalTermRepository>();
 
             services.AddControllers();
+            //services.AddMvc();
 
             var oSettingsSection = Configuration.GetSection("VHSMovieRentalSettings");
             services.Configure<VHSMovieRentalSettings>(oSettingsSection);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -96,8 +100,20 @@ namespace VHSMovieRentalAPI
 
             app.UseEndpoints(endpoints =>
             {
+                endpoints.MapControllerRoute(
+                    name: "default",
+                    pattern: "{controller}/{action}/{id?}",
+                    defaults: new { controller = "Default", action = "Index" }
+                    );
                 endpoints.MapControllers();
+
             });
+
+            app.UseMvc(routes =>
+            {
+                routes.MapRoute("default", "{controller=Default}/{action=Index}/{id?}");
+            });
+
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using VHSMovieRentalAPI.Interfaces;
 using VHSMovieRentalAPI.Models;
@@ -13,30 +14,77 @@ namespace VHSMovieRentalAPI.Repositories
 
         }
 
-        public int  CreateTransactionDetail(MovieTransactionDetail oDetail)
+        public int ValidateTransactionDetail(int iTransactionUserID, MovieTransactionDetail oDetail, out string sErrorMessage)
         {
             int iResult = 0;
-            // Validate all fields are correct
-            string sValidEntity = ValidateInfo(oDetail);
-            if (!string.IsNullOrEmpty(sValidEntity))
+            sErrorMessage = "";
+            try
             {
-                throw new Exception(sValidEntity);
+                // Validate Foreign Keys
+                var oMovie = oContext.Movies.AsNoTracking().Where(x => x.MovieID == oDetail.MovieID && x.Available).FirstOrDefault();
+                if (oMovie == null)
+                {
+                    sErrorMessage = "Movie doesn't exist";
+                    return -1;
+                }
+                
+                // Check if there is any stock available
+                int oOtherDetails = oContext.MovieTransactionDetail.AsNoTracking().Where(x => x.MovieID == oDetail.MovieID).Select(x => x.Quantity).Sum();
+                if (oOtherDetails + oDetail.Quantity > oMovie.Stock)
+                {
+                    sErrorMessage = "Cant Rent/Buy Movie: " + oMovie.Title + " not enough Stock.";
+                    return -1;
+                }
+
+                var oTransactionType = oContext.TransactionType.AsNoTracking().Where(x => x.TransactionTypeID == oDetail.TransactionTypeID).FirstOrDefault();
+                if (oTransactionType == null)
+                {
+                    sErrorMessage = "Transaction Type doesn't exist";
+                    return -1;
+                }
+
+                if (oDetail.MovieRentalTermID != 0)
+                {
+                    var oRentalTerm = oContext.MovieRentalTerm.AsNoTracking().Where(x => x.MovieRentalTermID == oDetail.MovieRentalTermID).FirstOrDefault();
+                    if (oRentalTerm == null)
+                    {
+                        sErrorMessage = "Movie Rental Term doesn't exist";
+                        return -1;
+                    }
+                }
+                else
+                {
+                    oDetail.MovieRentalTermID = null;
+                }
+
+                // By Default a Movie Rent will NOT be paid, take Price from Movies
+                if (oTransactionType.Description.ToLower().Trim() == "rental")
+                {
+                    oDetail.Returned = false;
+                    oDetail.Price = oMovie.RentalPrice;
+                }
+                else
+                {
+                    oDetail.Returned = true;
+                    oDetail.Price = oMovie.SalePrice;
+                }
+
+                // Rental Term is needed for Movie Rentals
+                if (!oDetail.Returned && oDetail.MovieRentalTermID == 0)
+                {
+                    throw new Exception("Rented Movie requieres a Movie Rental Term.");
+                }
+
+                // Create Detail
+                oDetail.UpdatedUserID = iTransactionUserID;
+                oDetail.Created = DateTime.Now;
+                oDetail.Updated = DateTime.Now;
+                iResult = 1;
             }
-
-            var oTransaction = oContext.TransactionType.Where(x => x.Description == "RENT").FirstOrDefault();
-
-            if (oDetail.TransactionTypeID == oTransaction.TransactionTypeID)
-                oDetail.Returned = false;
-            else oDetail.Returned = true;
-
-            if (oDetail.Returned = false && oDetail.TransactionTypeID == 0)
+            catch (Exception ex)
             {
-                throw new Exception("Rented Movie requieres a Transaction Type.");
+                sErrorMessage = ex.Message;
             }
-
-            oContext.Add(oDetail);
-
-            iResult = oDetail.MovieTransactionDetailID;
 
             return iResult;
         }
@@ -53,7 +101,7 @@ namespace VHSMovieRentalAPI.Repositories
             var oExistingDetail = oContext.MovieTransactionDetail
                 .Where(x => x.MovieTransactionDetailID == iMovieTransactionDetailId)
                 .FirstOrDefault();
-            
+
             // Non existing Detail
             if (oExistingDetail == null)
                 return dResult;
@@ -81,7 +129,7 @@ namespace VHSMovieRentalAPI.Repositories
             return dResult;
         }
 
-    private string ValidateInfo(MovieTransactionDetail oDetail)
+        private string ValidateInfo(MovieTransactionDetail oDetail)
         {
             string sInvalidEntity = "";
 
@@ -91,7 +139,7 @@ namespace VHSMovieRentalAPI.Repositories
             if (oDetail.MovieID == 0)
                 sInvalidEntity += " Movie";
 
-            if (oDetail.TransactionTypeID==0)
+            if (oDetail.TransactionTypeID == 0)
                 sInvalidEntity += " Transaction Type";
 
             if (oDetail.Quantity == 0)
@@ -107,6 +155,6 @@ namespace VHSMovieRentalAPI.Repositories
 
             return sInvalidEntity;
         }
-               
+
     }
 }

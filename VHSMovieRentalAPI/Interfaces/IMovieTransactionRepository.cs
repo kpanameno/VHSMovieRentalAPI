@@ -6,6 +6,6 @@ namespace VHSMovieRentalAPI.Interfaces
     {
 
         MovieTransaction GetWithDetailsById(int iTransactionID);
-        int CreateTransaction(MovieTransaction oMovieTransaction);
+        int CreateTransaction(int iUserTransactionID, MovieTransaction oMovieTransaction, out string sErrorMessage);
     }
 }

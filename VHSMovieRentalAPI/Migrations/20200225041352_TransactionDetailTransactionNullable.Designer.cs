@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VHSMovieRentalAPI.Models;
 
 namespace VHSMovieRentalAPI.Migrations
 {
     [DbContext(typeof(VHSMovieRentalDBContext))]
-    partial class VHSMovieRentalDBContextModelSnapshot : ModelSnapshot
+    [Migration("20200225041352_TransactionDetailTransactionNullable")]
+    partial class TransactionDetailTransactionNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
