@@ -74,9 +74,8 @@ namespace VHSMovieRentalAPI
             services.AddTransient<ITransactionTypeRepository, TransactionTypeRepository>();
             services.AddTransient<IMovieRentalTermRepository, MovieRentalTermRepository>();
 
-            services.AddControllers();
-            //services.AddMvc();
-
+            services.AddControllersWithViews();
+            
             var oSettingsSection = Configuration.GetSection("VHSMovieRentalSettings");
             services.Configure<VHSMovieRentalSettings>(oSettingsSection);
 
@@ -94,24 +93,15 @@ namespace VHSMovieRentalAPI
             app.UseHttpsRedirection();
 
             app.UseRouting();
-
+            app.UseStaticFiles();
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllerRoute(
-                    name: "default",
-                    pattern: "{controller}/{action}/{id?}",
-                    defaults: new { controller = "Default", action = "Index" }
-                    );
+                endpoints.MapControllerRoute("default", "{controller=Movie}/{action=Index}");
                 endpoints.MapControllers();
 
-            });
-
-            app.UseMvc(routes =>
-            {
-                routes.MapRoute("default", "{controller=Default}/{action=Index}/{id?}");
             });
 
         }

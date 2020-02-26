@@ -11,8 +11,6 @@ namespace VHSMovieRentalAPI.Models
         public int MovieID { get; set; }
         public int UserID { get; set; }
         public DateTime Created { get; set; }
-
-        public Movie Movie { get; set; }
-        public User User { get; set; }
+       
     }
 }

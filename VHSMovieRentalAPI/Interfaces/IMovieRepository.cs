@@ -8,7 +8,8 @@ namespace VHSMovieRentalAPI.Interfaces
 {
     public interface IMovieRepository: IPagination<Movie>, IRepository<Movie>
     {
-        IQueryable<Movie> GetAvailableMovies(string sTitleFilter, bool bAvailable, string sRoleName);
+        IQueryable<Movie> GetAvailableMovies( int iPageSize, int iPageStart, int iPages, int iRows,
+            string sTitleFilter, bool bAvailable, string sSortCol, string sSortDirection, string sRoleName);
         IQueryable<Movie> GetMoviesByAvailability(bool bAvailable);
         int UpdateMovie(int iMovieId, Movie oMovieEntity, out string sErrorMessage);
     }

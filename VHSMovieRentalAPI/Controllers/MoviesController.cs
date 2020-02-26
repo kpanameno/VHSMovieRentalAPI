@@ -24,16 +24,65 @@ namespace VHSMovieRentalAPI.Controllers
         // GET: api/Movies/{availability}
         [AllowAnonymous]
         [HttpGet]
-        public IEnumerable<Movie> GetMovies([FromQuery] string Title = "", [FromQuery] bool Available = true)
+        public IEnumerable<Movie> GetMovies(
+            [FromQuery]int? draw,
+            [FromQuery] int? start,
+            [FromQuery] int? page,
+            [FromQuery] int? length,
+            [FromQuery] IEnumerable<string> search,
+            [FromQuery] string title,
+            [FromQuery] IEnumerable<Dictionary<string, string>> order,
+            [FromQuery] bool? available)
         {
-            string sRoleName ="";
+            // length -> rows
+            // start -> point of start based on length
 
+            // Assign values
+            if (draw == null)
+                draw = 0;
+
+            if (start == null)
+                start = 0;
+
+            if (page == null)
+                page = 0;
+
+            if (length == null)
+                length = 0;
+
+            if (search.Count() > 0 && string.IsNullOrEmpty(title))
+                title = search.ToString();
+
+            if (available == null)
+                available = true;
+
+            // Order by}
+            string sSortDirection = "";
+            string sSortCol = "";
+            if (order.Count() == 1)
+            {
+                if (int.Parse(order.First()["column"]) == 0) {
+                    sSortCol = "like";
+                }
+
+                if (int.Parse(order.First()["column"]) == 1)
+                {
+                    sSortCol = "title";
+                }
+
+                sSortDirection = order.First()["dir"];
+            }
+
+
+
+            string sRoleName = "";
             if (User.FindFirst(ClaimTypes.Role) != null)
                 sRoleName = User.FindFirst(ClaimTypes.Role).Value;
 
-            return oMovieRepository.GetAvailableMovies(Title, Available, sRoleName);
+            return oMovieRepository.GetAvailableMovies(length.Value, start.Value, page.Value, draw.Value,
+                title, available.Value, sSortCol, sSortDirection, sRoleName);
         }
-
+        
         // GET: api/Movies/5
         [AllowAnonymous]
         [HttpGet("{iMovieID}")]

@@ -17,7 +17,8 @@ namespace VHSMovieRentalAPI.Repositories
             oLogRepository = new MoviePriceLogRepository(oContext);
         }
 
-        public IQueryable<Movie> GetAvailableMovies(string sTitleFilter, bool bAvailable, string sRoleName)
+        public IQueryable<Movie> GetAvailableMovies(int iPageSize, int iPageStart, int iPages, int iRows,
+            string sTitleFilter, bool bAvailable, string sSortCol, string sSortDirection, string sRoleName)
         {
             var oRole = oContext.Roles.AsNoTracking().Where(x => x.Name.ToLower().Trim() == sRoleName.ToLower().Trim()).FirstOrDefault();
             if (oRole != null)
@@ -31,19 +32,53 @@ namespace VHSMovieRentalAPI.Repositories
             {
                 bAvailable = true;
             }
+
             // Filter available
             var oMovieList = oContext.Movies.Where(x => x.Available == bAvailable).AsQueryable();
 
             if (!string.IsNullOrEmpty(sTitleFilter))
             {
                 sTitleFilter = sTitleFilter.Trim().ToLower();
-                return oMovieList.Where(x => x.Title.Trim().ToUpper().Contains(sTitleFilter));
-            }
-            else
-            {
-                return oMovieList;
+                oMovieList = oMovieList.Where(x => x.Title.Trim().ToUpper().Contains(sTitleFilter));
             }
 
+            // for like counter
+
+            oMovieList = oMovieList.Include(x => x.MovieLikes);
+
+            // Sort values
+            if (string.IsNullOrEmpty(sSortDirection))
+                sSortDirection = "ASC";
+
+            switch (sSortCol)
+            {
+                case "title":
+                    if (sSortDirection.ToUpper() == "ASC")
+                        oMovieList= oMovieList.OrderBy(x => x.Title);
+                    else
+                        oMovieList =  oMovieList.OrderByDescending(x => x.Title);
+                    break;
+                case "like":
+                    if (sSortDirection.ToUpper() == "ASC")
+                        oMovieList = oMovieList.OrderBy(x => x.MovieLikes.Count());
+                    else
+                        oMovieList = oMovieList.OrderByDescending(x => x.MovieLikes.Count());
+                    break;
+                default:
+                    oMovieList = oMovieList.OrderBy(x => x.Title);
+                    break;
+            }
+
+            // Specific page
+            if (iPageStart > 0)
+                oMovieList = oMovieList.Skip(iPageStart);
+
+            // Page Size
+            if (iPageSize > 0)
+                oMovieList = oMovieList.Take(iPageSize);
+
+            // Return values
+            return oMovieList;
         }
 
         public IQueryable<Movie> GetMoviesByAvailability(bool bAvailable)
