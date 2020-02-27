@@ -29,13 +29,12 @@ namespace VHSMovieRentalAPI.Controllers
             [FromQuery] int? start,
             [FromQuery] int? page,
             [FromQuery] int? length,
-            [FromQuery] IEnumerable<string> search,
             [FromQuery] string title,
             [FromQuery] IEnumerable<Dictionary<string, string>> order,
-            [FromQuery] bool? available)
+            [FromQuery] IEnumerable<string> search,
+            [FromQuery] bool? available,
+            [FromQuery] bool? popularity)
         {
-            // length -> rows
-            // start -> point of start based on length
 
             // Assign values
             if (draw == null)
@@ -56,12 +55,13 @@ namespace VHSMovieRentalAPI.Controllers
             if (available == null)
                 available = true;
 
-            // Order by}
+            // Order by
             string sSortDirection = "";
             string sSortCol = "";
             if (order.Count() == 1)
             {
-                if (int.Parse(order.First()["column"]) == 0) {
+                if (int.Parse(order.First()["column"]) == 0)
+                {
                     sSortCol = "like";
                 }
 
@@ -73,6 +73,11 @@ namespace VHSMovieRentalAPI.Controllers
                 sSortDirection = order.First()["dir"];
             }
 
+            if (!popularity != null)
+            {
+                sSortCol = "like";
+                sSortDirection = "desc";
+            }
 
 
             string sRoleName = "";
@@ -82,7 +87,7 @@ namespace VHSMovieRentalAPI.Controllers
             return oMovieRepository.GetAvailableMovies(length.Value, start.Value, page.Value, draw.Value,
                 title, available.Value, sSortCol, sSortDirection, sRoleName);
         }
-        
+
         // GET: api/Movies/5
         [AllowAnonymous]
         [HttpGet("{iMovieID}")]

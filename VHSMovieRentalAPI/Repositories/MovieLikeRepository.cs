@@ -31,6 +31,8 @@ namespace VHSMovieRentalAPI.Repositories
             }
             else
             {
+                // If a Like for the current movie-user exist it will be deleted
+                // Unlike functionality
                 Delete(oMovieLike);
                 iResult = 0;
             }

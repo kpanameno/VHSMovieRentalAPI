@@ -28,7 +28,7 @@ namespace VHSMovieRentalAPI.Controllers
         }
 
         // GET: api/MovieTransactionDetails/5
-        [HttpGet("{id}")]
+        [HttpGet("{iDetailId}")]
         public ActionResult<MovieTransactionDetail> GetMovieTransactionDetail(int iDetailId)
         {
             var movieTransactionDetail = oRepository.GetById(iDetailId);
@@ -44,7 +44,7 @@ namespace VHSMovieRentalAPI.Controllers
         // PUT: api/MovieTransactionDetails/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
-        [HttpPut("{id}")]
+        [HttpPut("{iDetailId}")]
         public IActionResult PutMovieTransactionDetail(int iDetailId, MovieTransactionDetail oMovieTransactionDetail)
         {
             if (iDetailId != oMovieTransactionDetail.MovieTransactionID)
@@ -65,7 +65,7 @@ namespace VHSMovieRentalAPI.Controllers
         }
 
         [Authorize(Roles = "Administrator")]
-        [HttpPut("{id}/rentalreturn")]
+        [HttpPut("{iDetailId}/rentalreturn")]
         public IActionResult PutRentalReturn(int iDetailId)
         {
             try
@@ -77,7 +77,7 @@ namespace VHSMovieRentalAPI.Controllers
                 throw ex;
             }
 
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/MovieTransactionDetails

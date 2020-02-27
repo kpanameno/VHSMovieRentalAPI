@@ -31,9 +31,9 @@ namespace VHSMovieRentalAPI.Controllers
 
         // GET: api/MovieLikes/5
         [HttpGet("{id}")]
-        public ActionResult<MovieLike> GetMovieLike(int iMovieLikeID)
+        public ActionResult<MovieLike> GetMovieLike(int id)
         {
-            var oMovieLike = oMovieLikeRepository.GetById(iMovieLikeID);
+            var oMovieLike = oMovieLikeRepository.GetById(id);
             if (oMovieLike == null)
             {
                 return NotFound();
@@ -48,16 +48,16 @@ namespace VHSMovieRentalAPI.Controllers
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see https://aka.ms/RazorPagesCRUD.
         [HttpPut("{id}")]
-        public IActionResult PutMovieLike(int iMovieLikeID, MovieLike oMovieLike)
+        public IActionResult PutMovieLike(int id, MovieLike oMovieLike)
         {
-            if (iMovieLikeID != oMovieLike.MovieLikeID)
+            if (id != oMovieLike.MovieLikeID)
             {
                 return BadRequest();
             }
 
             try
             {
-                var oExistingMovieLike = oMovieLikeRepository.GetById(iMovieLikeID);
+                var oExistingMovieLike = oMovieLikeRepository.GetById(id);
                 oExistingMovieLike.MovieID = oMovieLike.MovieID;
                 oExistingMovieLike.UserID = oMovieLike.UserID;
 
@@ -94,9 +94,9 @@ namespace VHSMovieRentalAPI.Controllers
 
         // DELETE: api/MovieLikes/5
         [HttpDelete("{id}")]
-        public ActionResult<MovieLike> DeleteMovieLike(int iMovieLikeID)
+        public ActionResult<MovieLike> DeleteMovieLike(int id)
         {
-            var oExistingLike = oMovieLikeRepository.GetById(iMovieLikeID);
+            var oExistingLike = oMovieLikeRepository.GetById(id);
             if (oExistingLike != null)
             {
                 oMovieLikeRepository.Delete(oExistingLike);

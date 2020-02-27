@@ -170,6 +170,7 @@ namespace VHSMovieRentalAPI.Repositories
 
             if (bCreateLog)
             {
+                // Create movie Log
                 MoviePriceLog oLog = new MoviePriceLog();
                 oLog.MovieID = oExistingMovie.MovieID;
                 oLog.Title = oExistingMovie.Title.Trim();

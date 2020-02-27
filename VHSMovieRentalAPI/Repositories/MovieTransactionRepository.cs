@@ -17,6 +17,7 @@ namespace VHSMovieRentalAPI.Repositories
 
         public MovieTransaction GetWithDetailsById(int iTransactionID)
         {
+            // Get Transaction by ID and include all Details
             return oContext.MovieTransaction
                 .Where(x => x.MovieTransactionID == iTransactionID)
                 .Include(x => x.MovieTransactionDetails).FirstOrDefault();
@@ -61,6 +62,7 @@ namespace VHSMovieRentalAPI.Repositories
                 oMovieTransaction.Updated = DateTime.Now;
                 Create(oMovieTransaction);
 
+                iResult = oMovieTransaction.MovieTransactionID;
             }
             catch (Exception ex)
             {

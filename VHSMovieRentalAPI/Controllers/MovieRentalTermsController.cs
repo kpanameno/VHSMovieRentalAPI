@@ -31,9 +31,9 @@ namespace VHSMovieRentalAPI.Controllers
         // GET: api/MovieRentalTerms/5
         [Authorize(Roles = "Administrator")]
         [HttpGet("{id}")]
-        public ActionResult<MovieRentalTerm> GetMovieRentalTerm(int iMovieRentalTermID)
+        public ActionResult<MovieRentalTerm> GetMovieRentalTerm(int id)
         {
-            var oMovieRentalTerm = oRepository.GetById(iMovieRentalTermID);
+            var oMovieRentalTerm = oRepository.GetById(id);
 
             if (oMovieRentalTerm == null)
             {
@@ -48,9 +48,9 @@ namespace VHSMovieRentalAPI.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
-        public IActionResult PutMovieRentalTerm(int iMovieRentalTermID, MovieRentalTerm oMovieRentalTerm)
+        public IActionResult PutMovieRentalTerm(int id, MovieRentalTerm oMovieRentalTerm)
         {
-            if (iMovieRentalTermID != oMovieRentalTerm.MovieRentalTermID)
+            if (id != oMovieRentalTerm.MovieRentalTermID)
             {
                 return BadRequest();
             }
@@ -61,7 +61,7 @@ namespace VHSMovieRentalAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MovieRentalTermExists(iMovieRentalTermID))
+                if (!MovieRentalTermExists(id))
                 {
                     return NotFound();
                 }
@@ -88,9 +88,9 @@ namespace VHSMovieRentalAPI.Controllers
         // DELETE: api/MovieRentalTerms/5
         [Authorize(Roles = "Administrator")]
         [HttpDelete("{id}")]
-        public ActionResult<MovieRentalTerm> DeleteMovieRentalTerm(int iMovieRentalTermID)
+        public ActionResult<MovieRentalTerm> DeleteMovieRentalTerm(int id)
         {
-            var oRentalTerm = oRepository.GetById(iMovieRentalTermID);
+            var oRentalTerm = oRepository.GetById(id);
             if (oRentalTerm != null)
             {
                 oRepository.Delete(oRentalTerm);

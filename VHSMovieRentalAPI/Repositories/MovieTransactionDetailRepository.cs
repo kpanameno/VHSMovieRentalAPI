@@ -36,12 +36,16 @@ namespace VHSMovieRentalAPI.Repositories
                     return -1;
                 }
 
+                // Valid Transaction Type
+
                 var oTransactionType = oContext.TransactionType.AsNoTracking().Where(x => x.TransactionTypeID == oDetail.TransactionTypeID).FirstOrDefault();
                 if (oTransactionType == null)
                 {
                     sErrorMessage = "Transaction Type doesn't exist";
                     return -1;
                 }
+
+                // For Rentals verify the Rental Term exists
 
                 if (oDetail.MovieRentalTermID != 0)
                 {
@@ -107,14 +111,15 @@ namespace VHSMovieRentalAPI.Repositories
                 return dResult;
 
             // Not a rental
-            var oTransaction = oContext.TransactionType.Where(x => x.Description == "RENT").FirstOrDefault();
+            var oTransaction = oContext.TransactionType.Where(x => x.Description == "RENTAL").FirstOrDefault();
             if (oExistingDetail.TransactionTypeID != oTransaction.TransactionTypeID)
                 return dResult;
 
             // Rental already returned
             if (oExistingDetail.Returned)
                 return dResult;
-
+            
+            // Calculate Late Return term
             var oTerm = oContext.MovieRentalTerm.Where(x => x.MovieRentalTermID == oExistingDetail.MovieRentalTermID).FirstOrDefault();
             DateTime tStartDate = oExistingDetail.Created;
             DateTime tEndDate = DateTime.Now;
@@ -126,6 +131,11 @@ namespace VHSMovieRentalAPI.Repositories
                 dResult = oTerm.LateReturnCharge * iExtraDays;
             }
 
+            // Update Detail and add any late return penalty
+            oExistingDetail.Price += dResult;
+            oExistingDetail.Updated = DateTime.Now;
+            oExistingDetail.Returned = true;
+            Update(oExistingDetail);
             return dResult;
         }
 

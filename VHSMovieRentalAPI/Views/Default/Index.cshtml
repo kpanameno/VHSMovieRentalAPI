@@ -4,19 +4,16 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Movie</title>
-    @*<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css" />
-        <script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.js"></script>*@
-    
+
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/dt/dt-1.10.20/datatables.min.css" />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/style.css" />
 
 </head>
 <body>
     <p>
-        <a asp-action="Create">Create New</a>
+        <img src="~/img/VHS_Logo.jpg" class="rounded mx-auto d-block" alt="...">
     </p>
-
     <table id="moviesdt" class="table table-striped table-bordered" style="width:100%">
         <thead>
             <tr>
@@ -30,6 +27,8 @@
         </thead>
     </table>
 
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script>
         $(document).ready(function () {
             var table = $('#moviesdt').DataTable({
@@ -47,18 +46,16 @@
                     { "data": "rentalPrice", "orderable": false, "sortable":false},
                     { "data": "salePrice", "orderable": false, "sortable":false}
                 ],
-                pageLength: 2
+                pageLength: 2,
+                "order": [[1, "asc"]],
+                "lengthMenu": [[2, 5, 10, -1], [2, 5, 10, "All"]]
             });
 
-            // #myInput is a <input type="text"> element
-            $('#globalSearch').on('keyup', function () {
+            $('#moviesearch').on('keyup', function () {
                 table.search(this.value).draw();
             });
 
-            $('#globalSearchButton').on('click', function () {
-                table.search($('#globalSearch').val()).draw();
-            })
-        });
+} );
 
 
     </script>

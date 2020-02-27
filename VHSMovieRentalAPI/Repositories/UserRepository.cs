@@ -58,9 +58,11 @@ namespace VHSMovieRentalAPI.Repositories
             try
             {
 
-
+                // Get values stored in the DB
                 var oExistingUser = oContext.Users.AsNoTracking().Where(x => x.UserID == oUser.UserID).FirstOrDefault();
                 var oExistingRole = oContext.Roles.AsNoTracking().Where(x => x.Name.ToLower().Trim() == sRoleName.ToLower().Trim()).FirstOrDefault();
+
+                // Only admins can update other users
 
                 if (iUpdatedUserID != oExistingUser.UserID && oExistingRole.Name.Trim().ToLower() != "administrator")
                 {
@@ -69,6 +71,9 @@ namespace VHSMovieRentalAPI.Repositories
                 }
 
 
+                // Only admins can update roles
+                // This means that customers can update their user without affecting the Role
+
                 if (oUser.RoleID != oExistingUser.RoleID && oExistingRole.Name.Trim().ToLower() != "administrator")
                 {
                     sErrorMessage = "You have no privileges to update a User's Role";
@@ -76,7 +81,6 @@ namespace VHSMovieRentalAPI.Repositories
                 }
 
                 // Encrypt new Password
-
                 if (oExistingUser.Password != oUser.Password)
                     oUser.Password = Encrypt(oUser.Password);
 
@@ -84,7 +88,7 @@ namespace VHSMovieRentalAPI.Repositories
                 oUser.Created = oExistingUser.Created;
                 oUser.Active = oExistingUser.Active;
 
-
+                // Update record
                 Update(oUser);
 
             }
@@ -170,6 +174,7 @@ namespace VHSMovieRentalAPI.Repositories
         public User Login(string sUserName, string sPassword, out string sErrorMessage)
         {
             sErrorMessage = "";
+            sPassword = Encrypt(sPassword);
             var oUser = oContext.Users.Include(x => x.Role).SingleOrDefault(x => x.UserName == sUserName && x.Password == sPassword);
 
             if (oUser != null)

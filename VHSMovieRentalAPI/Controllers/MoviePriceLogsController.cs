@@ -31,9 +31,9 @@ namespace VHSMovieRentalAPI.Controllers
         // GET: api/MoviePriceLogs/5
         [Authorize(Roles = "Administrator")]
         [HttpGet("{id}")]
-        public ActionResult<MoviePriceLog> GetMoviePriceLog(int iLogID)
+        public ActionResult<MoviePriceLog> GetMoviePriceLog(int id)
         {
-            var oLog = oLogRepository.GetById(iLogID);
+            var oLog = oLogRepository.GetById(id);
 
             if (oLog == null)
             {
@@ -48,9 +48,9 @@ namespace VHSMovieRentalAPI.Controllers
         // more details see https://aka.ms/RazorPagesCRUD.
         [Authorize(Roles = "Administrator")]
         [HttpPut("{id}")]
-        public IActionResult PutMoviePriceLog(int iLogID, MoviePriceLog oLog)
+        public IActionResult PutMoviePriceLog(int id, MoviePriceLog oLog)
         {
-            if (iLogID != oLog.MoviePriceLogID)
+            if (id != oLog.MoviePriceLogID)
             {
                 return BadRequest();
             }
@@ -61,7 +61,7 @@ namespace VHSMovieRentalAPI.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                if (!MoviePriceLogExists(iLogID))
+                if (!MoviePriceLogExists(id))
                 {
                     return NotFound();
                 }
@@ -87,9 +87,9 @@ namespace VHSMovieRentalAPI.Controllers
 
         // DELETE: api/MoviePriceLogs/5
         [HttpDelete("{id}")]
-        public ActionResult<MoviePriceLog> DeleteMoviePriceLog(int iLogID)
+        public ActionResult<MoviePriceLog> DeleteMoviePriceLog(int id)
         {
-            var oLog = oLogRepository.GetById(iLogID);
+            var oLog = oLogRepository.GetById(id);
             if (oLog == null)
             {
                 return NotFound();
